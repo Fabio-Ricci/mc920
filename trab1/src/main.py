@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-def readColorImage(filepath):
-    return cv2.imread(filepath, cv2.IMREAD_COLOR) 
+def readColoredImage(filepath):
+    return cv2.cvtColor(cv2.imread(filepath, cv2.IMREAD_COLOR) , cv2.COLOR_BGR2RGB)
 
 def readGreyImage(filepath):
     return cv2.imread(filepath, cv2.IMREAD_GRAYSCALE)
@@ -84,20 +84,36 @@ def halftoningAlternating(image):
     return (f, g)
 
 if __name__ == '__main__':
-    image = readColorImage("../in/baboon.png")
+    image = readColoredImage("../in/peppers.png")
+    (image_r, image_g, image_b) = cv2.split(image)
+    
+    #Halftoning Color
+    (original_r, binary_r) = halftoning(image_r)
+    (original_g, binary_g) = halftoning(image_g)
+    (original_b, binary_b) = halftoning(image_b)
+    original = cv2.merge((original_r, original_g, original_b))
+    binary = cv2.merge((binary_r, binary_g, binary_b))
+    showImage(original)
+    showImage(binary)
+    
+    # #Halftoning Alternating Color
+    # (original_r, binary_r) = halftoningAlternating(image_r)
+    # (original_g, binary_g) = halftoningAlternating(image_g)
+    # (original_b, binary_b) = halftoningAlternating(image_b)
+    # original = cv2.merge((original_r, original_g, original_b))
+    # binary = cv2.merge((binary_r, binary_g, binary_b))
+    # showImage(original)
+    # showImage(binary)
 
-    # original = np.zeros(shape=image.shape)
-    # binary = np.zeros(shape=image.shape)
-    # for i in range(3):
-    #     (original[i], binary[i]) = halftoning(image[i])
-
+    #######################################################
     # image = readGreyImage("../in/baboon.png")
-    # #Halftoning
+
+    # #Halftoning Grey
     # (original, binary) = halftoning(image)
     # showImage(original)
     # showImage(binary)
 
-    # #Halftoning Alternating
+    # #Halftoning Alternating Grey
     # (original, binary) = halftoningAlternating(image)
     # showImage(original)
     # showImage(binary)
