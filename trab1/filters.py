@@ -3,8 +3,8 @@ import numpy as np
 # Floyd and Steingberg
 def halftoningFloyd(image):
     f = np.copy(image)
-    width = f.shape[1]
-    height = f.shape[0]
+    height = f.shape[1]
+    width = f.shape[0]
     g = np.zeros((width, height))
     for x in range(0, width):
         for y in range(0, height):
@@ -29,8 +29,8 @@ def halftoningFloyd(image):
 
 def halftoningZigzagFloyd(image):
     f = np.copy(image)
-    width = f.shape[1]
-    height = f.shape[0]
+    height = f.shape[1]
+    width = f.shape[0]
     g = np.zeros((width, height))
     i = 0
     for x in range(0, width):
@@ -75,8 +75,8 @@ def halftoningZigzagFloyd(image):
 # Burkes
 def halftoningBurkes(image):
     f = np.copy(image)
-    width = f.shape[1]
-    height = f.shape[0]
+    height = f.shape[1]
+    width = f.shape[0]
     g = np.zeros((width, height))
     for x in range(0, width):
         for y in range(0, height):
@@ -107,8 +107,8 @@ def halftoningBurkes(image):
 
 def halftoningZigzagBurkes(image):
     f = np.copy(image)
-    width = f.shape[1]
-    height = f.shape[0]
+    height = f.shape[1]
+    width = f.shape[0]
     g = np.zeros((width, height))
     i = 0
     for x in range(0, width):

@@ -2,3 +2,5 @@ __pycache__/
 *.png
 .DS_Store
 */.DS_Store
+mc920env/
+.vscode
