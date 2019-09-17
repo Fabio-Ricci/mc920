@@ -13,6 +13,14 @@ if __name__ == '__main__':
     in_file = sys.argv[1]
     out_file = sys.argv[2]
     path = os.path.dirname(os.path.realpath(__file__))
+
+    if not os.path.exists("./out/"):
+        os.makedirs("./out/")
+    if not os.path.exists("./out/color"):
+        os.makedirs("./out/color")
+    if not os.path.exists("./out/grey"):
+        os.makedirs("./out/grey")
+
     out_path_color = path + "/out/color/" + out_file
     out_path_grey = path + "/out/grey/" +  out_file
 
