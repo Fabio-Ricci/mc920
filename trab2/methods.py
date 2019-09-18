@@ -28,7 +28,6 @@ def _global(image):
 # Bernsen Method   
 def _bernsen(image):
     img = np.copy(image)
-    hist = np.zeros(256)
     delta = 1
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
@@ -39,7 +38,6 @@ def _bernsen(image):
 # Niblack Method
 def _niblack(image, delta=1, k=1):
     img = np.copy(image)
-    hist = np.zeros(256)
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
             img[x][y] = 0 if img[x][y] < localAverage(image, delta, x, y) + k*standardDeviation(image, delta, x, y) else 255 
@@ -48,7 +46,6 @@ def _niblack(image, delta=1, k=1):
 # Sauvola and Pietaksinen Method
 def _sauvola_pietaksinen(image, delta=1, k=0.5, R=128):
     img = np.copy(image)
-    hist = np.zeros(256)
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
             img[x][y] = 0 if img[x][y] < localAverage(image, delta, x, y)*(1+k*(standardDeviation(image, delta, x, y)/R-1)) else 255 
@@ -57,17 +54,15 @@ def _sauvola_pietaksinen(image, delta=1, k=0.5, R=128):
 # Phansalskar, More and Sabale Method
 def _phansalskar(image, delta=1, k=0.25, R=0.5, p=2, q=10):
     img = np.copy(image)
-    hist = np.zeros(256)
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
             avg = localAverage(image, delta, x, y)
-            img[x][y] = 0 if img[x][y] < avg*(1+p*math.exp(-q*avg)+k*(standardDeviation(image, delta, x, y)/R-1)) else 255 
+            img[x][y] = 0 if img[x][y] < avg*(1+p*math.exp(-q*avg)+k*(standardDeviation(image, delta, x, y)/R-1)) else 255
     return img
 
 # Contrast Method
 def _contrast(image, delta=1):
     img = np.copy(image)
-    hist = np.zeros(256)
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
             (min, max) = min_max_in_neighborhood(image, delta, x, y)
@@ -77,7 +72,6 @@ def _contrast(image, delta=1):
 # Average Method
 def _average(image, delta=1):
     img = np.copy(image)
-    hist = np.zeros(256)
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
             avg = localAverage(image, delta, x, y)
@@ -87,7 +81,6 @@ def _average(image, delta=1):
 # Median Method
 def _median(image, delta=1):
     img = np.copy(image)
-    hist = np.zeros(256)
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
             median = localMedian(image, delta, x, y)
