@@ -20,3 +20,21 @@ if __name__ == '__main__':
 
     img = methods._bernsen(image)
     cv2.imwrite(out_path + "_bernsen.png", img)
+
+    img = methods._niblack(image)
+    cv2.imwrite(out_path + "_niblack.png", img)
+
+    img = methods._sauvola_pietaksinen(image)
+    cv2.imwrite(out_path + "_sauvola_pietaksinen.png", img)
+
+    img = methods._phansalskar(image)
+    cv2.imwrite(out_path + "_phansalskar.png", img)
+
+    img = methods._contrast(image)
+    cv2.imwrite(out_path + "_contrast.png", img)
+
+    img = methods._average(image)
+    cv2.imwrite(out_path + "_average.png", img)
+
+    img = methods._median(image)
+    cv2.imwrite(out_path + "_median.png", img)
