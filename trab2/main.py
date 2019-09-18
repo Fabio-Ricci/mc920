@@ -7,11 +7,11 @@ from matplotlib import pyplot as plt
 def readImage(filepath):
     return cv2.imread(filepath, cv2.IMREAD_GRAYSCALE)
 
-def saveHistogram(img, title, out_path, methodName):
+def saveHistogram(hist, title, out_path, methodName, weights=None):
     plt.title(title)
     plt.xlabel('Valor do pixel')
     plt.ylabel('Quantidade')
-    plt.hist(img)
+    plt.hist(hist, weights=weights, bins=255)
     plt.savefig(out_path + methodName + "_histogram")
 
 if __name__ == '__main__':
@@ -27,30 +27,30 @@ if __name__ == '__main__':
     saveHistogram(img, "Global Method", out_path, "_global")
     cv2.imwrite(out_path + "_global.png", img)
 
-    img = methods._bernsen(image)
-    saveHistogram(img, "Bernsen Method", out_path, "_bernsen")
+    (img, hist) = methods._bernsen(image)
+    saveHistogram(hist, "Bernsen Method", out_path, "_bernsen", weights=hist)
     cv2.imwrite(out_path + "_bernsen.png", img)
 
-    img = methods._niblack(image)
-    saveHistogram(img, "Niblack Method", out_path, "_niblack")
+    (img, hist) = methods._niblack(image)
+    saveHistogram(hist, "Niblack Method", out_path, "_niblack", weights=hist)
     cv2.imwrite(out_path + "_niblack.png", img)
 
-    img = methods._sauvola_pietaksinen(image)
-    saveHistogram(img, "Sauvola and Pietaksinen Method", out_path, "_sauvola_pietaksinen")
+    (img, hist) = methods._sauvola_pietaksinen(image)
+    saveHistogram(hist, "Sauvola and Pietaksinen Method", out_path, "_sauvola_pietaksinen", weights=hist)
     cv2.imwrite(out_path + "_sauvola_pietaksinen.png", img)
 
-    img = methods._phansalskar(image)
-    saveHistogram(img, "Phansalskar Method", out_path, "_phansalskar")
+    (img, hist) = methods._phansalskar(image)
+    saveHistogram(hist, "Phansalskar Method", out_path, "_phansalskar", weights=hist)
     cv2.imwrite(out_path + "_phansalskar.png", img)
 
-    img = methods._contrast(image)
-    saveHistogram(img, "Contrast Method", out_path, "_contrast")
+    (img, hist) = methods._contrast(image)
+    saveHistogram(hist, "Contrast Method", out_path, "_contrast", weights=hist)
     cv2.imwrite(out_path + "_contrast.png", img)
 
-    img = methods._average(image)
-    saveHistogram(img, "Average Method", out_path, "_average")
+    (img, hist) = methods._average(image)
+    saveHistogram(hist, "Average Method", out_path, "_average", weights=hist)
     cv2.imwrite(out_path + "_average.png", img)
 
-    img = methods._median(image)
-    saveHistogram(img, "Median Method", out_path, "_median")
+    (img, hist) = methods._median(image)
+    saveHistogram(hist, "Median Method", out_path, "_median", weights=hist)
     cv2.imwrite(out_path + "_median.png", img)
