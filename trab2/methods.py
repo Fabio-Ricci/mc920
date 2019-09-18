@@ -33,9 +33,8 @@ def _bernsen(image):
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
             (min, max) = min_max_in_neighborhood(image, delta, x, y)
-            img[x][y] = (int(min) + int(max))/2
-            hist[img[x][y]] = hist[img[x][y]] + 1
-    return (img, hist)
+            img[x][y] = 0 if img[x][y] < (int(min) + int(max))/2 else 255  
+    return img
 
 # Niblack Method
 def _niblack(image, delta=1, k=1):
@@ -43,9 +42,8 @@ def _niblack(image, delta=1, k=1):
     hist = np.zeros(256)
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
-            img[x][y] = localAverage(image, delta, x, y) + k*standardDeviation(image, delta, x, y)
-            hist[img[x][y]] = hist[img[x][y]] + 1
-    return (img, hist)
+            img[x][y] = 0 if img[x][y] < localAverage(image, delta, x, y) + k*standardDeviation(image, delta, x, y) else 255 
+    return img
 
 # Sauvola and Pietaksinen Method
 def _sauvola_pietaksinen(image, delta=1, k=0.5, R=128):
@@ -53,9 +51,8 @@ def _sauvola_pietaksinen(image, delta=1, k=0.5, R=128):
     hist = np.zeros(256)
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
-            img[x][y] = localAverage(image, delta, x, y)*(1+k*(standardDeviation(image, delta, x, y)/R-1))
-            hist[img[x][y]] = hist[img[x][y]] + 1
-    return (img, hist)
+            img[x][y] = 0 if img[x][y] < localAverage(image, delta, x, y)*(1+k*(standardDeviation(image, delta, x, y)/R-1)) else 255 
+    return img
 
 # Phansalskar, More and Sabale Method
 def _phansalskar(image, delta=1, k=0.25, R=0.5, p=2, q=10):
@@ -64,9 +61,8 @@ def _phansalskar(image, delta=1, k=0.25, R=0.5, p=2, q=10):
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
             avg = localAverage(image, delta, x, y)
-            img[x][y] = avg*(1+p*math.exp(-q*avg)+k*(standardDeviation(image, delta, x, y)/R-1))
-            hist[img[x][y]] = hist[img[x][y]] + 1
-    return (img, hist)
+            img[x][y] = 0 if img[x][y] < avg*(1+p*math.exp(-q*avg)+k*(standardDeviation(image, delta, x, y)/R-1)) else 255 
+    return img
 
 # Contrast Method
 def _contrast(image, delta=1):
@@ -76,8 +72,7 @@ def _contrast(image, delta=1):
         for y in range(delta, img.shape[1]-delta):
             (min, max) = min_max_in_neighborhood(image, delta, x, y)
             img[x][y] = 255 if abs(int(min) - int(img[x][y])) < abs(int(max) - int(img[x][y])) else 0
-            hist[img[x][y]] = hist[img[x][y]] + 1
-    return (img, hist)
+    return img
 
 # Average Method
 def _average(image, delta=1):
@@ -86,9 +81,8 @@ def _average(image, delta=1):
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
             avg = localAverage(image, delta, x, y)
-            img[x][y] = 255 if img[x][y] > avg else 0
-            hist[img[x][y]] = hist[img[x][y]] + 1
-    return (img, hist)
+            img[x][y] = 255 if img[x][y] > avg else 0         
+    return img
 
 # Median Method
 def _median(image, delta=1):
@@ -97,6 +91,5 @@ def _median(image, delta=1):
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
             median = localMedian(image, delta, x, y)
-            img[x][y] = 255 if img[x][y] > median else 0
-            hist[img[x][y]] = hist[img[x][y]] + 1
-    return (img, hist)
+            img[x][y] = 255 if img[x][y] > median else 0       
+    return img
