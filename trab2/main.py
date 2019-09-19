@@ -10,7 +10,7 @@ def readImage(filepath):
 def saveHistogram(image, title, out_path, methodName):
     plt.title(title)
     plt.xlabel('Valor do pixel')
-    plt.ylabel('Quantidade')
+    plt.ylabel('Quantidade de pixels')
     plt.hist(image, bins=255)
     plt.savefig(out_path + methodName + "_histogram")
 
