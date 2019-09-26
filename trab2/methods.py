@@ -26,9 +26,8 @@ def _global(image):
     return img
 
 # Bernsen Method   
-def _bernsen(image):
+def _bernsen(image, delta=1):
     img = np.copy(image)
-    delta = 1
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
             (min, max) = min_max_in_neighborhood(image, delta, x, y)
@@ -36,7 +35,7 @@ def _bernsen(image):
     return img
 
 # Niblack Method
-def _niblack(image, delta=1, k=1):
+def _niblack(image, delta=1, k=0.5):
     img = np.copy(image)
     for x in range(delta, img.shape[0]-delta):
         for y in range(delta, img.shape[1]-delta):
