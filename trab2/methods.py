@@ -85,3 +85,6 @@ def _median(image, delta=1):
             median = localMedian(image, delta, x, y)
             img[x][y] = 255 if img[x][y] > median else 0       
     return img
+
+def darkPixelsPercentage(image):
+    return len(image[image==0])/(image.shape[0]*image.shape[1])
