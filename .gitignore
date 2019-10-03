@@ -1,6 +1,4 @@
 __pycache__/
-*.png
-*.pgm
 .DS_Store
 */.DS_Store
 mc920env/
