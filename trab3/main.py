@@ -3,7 +3,7 @@ import sys
 import os
 import numpy as np
 from matplotlib import pyplot as plt
-from skimage.measure import label, regionprops
+from skimage import measure
 
 def readImage(filepath):
     return cv2.imread(filepath, cv2.IMREAD_COLOR)
@@ -12,26 +12,23 @@ def saveImage(filepath, image):
     cv2.imwrite(filepath, image)
 
 def convertColors(image):
-    (image_r, image_g, image_b) = cv2.split(img)
-    for x in range(image.shape[0]):
-       for y in range(image.shape[1]):
-           img[x][y] = (int(image_r[x][y]) + int(image_g[x][y]) + int(image_b[x][y]))/3
-    return img
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(image, 200, 255, 0)
+    return thresh
 
-def getEdges(image):
-    img = cv2.Canny(image, 100, 200)
-    return np.where(img == 0, 255, 0)
+def getContours(image):
+    image = cv2.Canny(image, 0, 200) 
+    return np.where(image == 0, 255, 0)
 
-def getContours(image):  
-    img = np.copy(image)
-    gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  
-    ret, thresh = cv2.threshold(gray_image, 200, 255, 0)
-    contours, hierarchy = cv2.findContours(thresh, 1, 2)
+def getImageProperties(image, gray_image):  
+    label_img = measure.label(gray_image)
+    regions = measure.regionprops(label_img)
     i = 0
     areas = np.zeros(len(contours) - 1)
-    contours.reverse()
-    contours = contours[1:]
-    print("Número de regiões: ", len(contours), "\n") 
+    #contours.reverse()
+    #contours = contours[1:]
+    print("Número de regiões: ", len(contours), "\n")
+     
     for c in contours:
         # calculate moments for each contour
         M = cv2.moments(c)
@@ -40,7 +37,7 @@ def getContours(image):
         cX = int(M["m10"] / M["m00"])
         cY = int(M["m01"] / M["m00"])
 
-        cv2.putText(img, str(i), (cX-4, cY+4), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 0), 0)
+        cv2.putText(image, str(i), (cX-4, cY+4), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 0), 0)
         # Area
         areas[i] = cv2.contourArea(c)
         # Perimeter
@@ -58,7 +55,7 @@ def getContours(image):
 
         print("Região", str(i) + ":", "área:", areas[i], "perímetro:", perimeter, "excentricidade:", eccentricity, "solidez:", solidity)
         i = i + 1
-    return (img, areas)
+    return (image, areas)
 
 def getAreasHistogram(areas, filepath):
     areasNumber = np.zeros(3)
@@ -86,13 +83,13 @@ if __name__ == '__main__':
 
     image = readImage(in_file)
 
-    img = convertColors(image)
-    saveImage(out_path + out_file + "_1.png", img)
+    gray_image = convertColors(image)
+    saveImage(out_path + out_file + "_1.png", gray_image)
 
-    img = getEdges(img)
-    saveImage(out_path + out_file + "_2.png", img)
+    edged_image = getContours(gray_image)
+    saveImage(out_path + out_file + "_2.png", edged_image)
 
-    (img, areas) = getContours(image)
-    saveImage(out_path + out_file + "_3.png", img)
+    (image, areas) = getImageProperties(image, gray_image)
+    saveImage(out_path + out_file + "_3.png", image)
 
     getAreasHistogram(areas, out_path + out_file + "_4.png")
