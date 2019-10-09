@@ -3,6 +3,7 @@ import sys
 import os
 import numpy as np
 from matplotlib import pyplot as plt
+from skimage.measure import label, regionprops
 
 def readImage(filepath):
     return cv2.imread(filepath, cv2.IMREAD_COLOR)
@@ -11,25 +12,26 @@ def saveImage(filepath, image):
     cv2.imwrite(filepath, image)
 
 def convertColors(image):
-    img = np.copy(image)
     (image_r, image_g, image_b) = cv2.split(img)
     for x in range(image.shape[0]):
-        for y in range(image.shape[1]):
-            img[x][y] = (int(image_r[x][y]) + int(image_g[x][y]) + int(image_b[x][y]))/3
+       for y in range(image.shape[1]):
+           img[x][y] = (int(image_r[x][y]) + int(image_g[x][y]) + int(image_b[x][y]))/3
     return img
 
 def getEdges(image):
-    img = cv2.Canny(image,100,200)
+    img = cv2.Canny(image, 100, 200)
     return np.where(img == 0, 255, 0)
 
-def getCentroid(image):  
+def getContours(image):  
     img = np.copy(image)
     gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  
-    ret, thresh = cv2.threshold(gray_image,127,255,0)
+    ret, thresh = cv2.threshold(gray_image, 200, 255, 0)
     contours, hierarchy = cv2.findContours(thresh, 1, 2)
-    i=0
+    i = 0
+    areas = np.zeros(len(contours) - 1)
+    contours.reverse()
+    contours = contours[1:]
     print("Número de regiões: ", len(contours), "\n") 
-    areas = np.zeros(len(contours))
     for c in contours:
         # calculate moments for each contour
         M = cv2.moments(c)
@@ -38,7 +40,7 @@ def getCentroid(image):
         cX = int(M["m10"] / M["m00"])
         cY = int(M["m01"] / M["m00"])
 
-        cv2.putText(img, str(i), (cX-4, cY+4), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1)
+        cv2.putText(img, str(i), (cX-4, cY+4), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 0), 0)
         # Area
         areas[i] = cv2.contourArea(c)
         # Perimeter
@@ -63,6 +65,10 @@ def getAreasHistogram(areas, filepath):
     areasNumber[0] = len(areas[areas < 1500])
     areasNumber[1] = len([a for a in areas if a >= 1500 and a < 3000])
     areasNumber[2] = len(areas[areas >= 3000])
+    print("número de regiões pequenas:", int(areasNumber[0]))
+    print("número de regiões médias:", int(areasNumber[1]))
+    print("número de regiões grandes:", int(areasNumber[2]))
+
     plt.title('Histograma de áreas dos objetos')
     plt.xlabel('Area')
     plt.ylabel('Número de Objetos')
@@ -83,10 +89,10 @@ if __name__ == '__main__':
     img = convertColors(image)
     saveImage(out_path + out_file + "_1.png", img)
 
-    img = getEdges(image)
+    img = getEdges(img)
     saveImage(out_path + out_file + "_2.png", img)
 
-    (img, areas) = getCentroid(image)
+    (img, areas) = getContours(image)
     saveImage(out_path + out_file + "_3.png", img)
 
     getAreasHistogram(areas, out_path + out_file + "_4.png")
