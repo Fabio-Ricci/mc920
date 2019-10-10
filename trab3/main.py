@@ -20,15 +20,13 @@ def getContours(image):
     image = cv2.Canny(image, 0, 200) 
     return np.where(image == 0, 255, 0)
 
-def getImageProperties(image, gray_image):  
-    label_img = measure.label(gray_image)
-    regions = measure.regionprops(label_img)
+def getImageProperties(image, gray_image):
+    contours, _ = cv2.findContours(gray_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE) 
     i = 0
     areas = np.zeros(len(contours) - 1)
-    #contours.reverse()
-    #contours = contours[1:]
+    contours = contours[1:]
+    contours.reverse()
     print("Número de regiões: ", len(contours), "\n")
-     
     for c in contours:
         # calculate moments for each contour
         M = cv2.moments(c)
