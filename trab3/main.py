@@ -3,7 +3,6 @@ import sys
 import os
 import numpy as np
 from matplotlib import pyplot as plt
-from skimage import measure
 
 def readImage(filepath):
     return cv2.imread(filepath, cv2.IMREAD_COLOR)
@@ -60,12 +59,12 @@ def getAreasHistogram(areas, filepath):
     areasNumber[0] = len(areas[areas < 1500])
     areasNumber[1] = len([a for a in areas if a >= 1500 and a < 3000])
     areasNumber[2] = len(areas[areas >= 3000])
-    print("número de regiões pequenas:", int(areasNumber[0]))
-    print("número de regiões médias:", int(areasNumber[1]))
-    print("número de regiões grandes:", int(areasNumber[2]))
+    print("Número de regiões pequenas:", int(areasNumber[0]))
+    print("Número de regiões médias:", int(areasNumber[1]))
+    print("Número de regiões grandes:", int(areasNumber[2]))
 
     plt.title('Histograma de áreas dos objetos')
-    plt.xlabel('Area')
+    plt.xlabel('Área')
     plt.ylabel('Número de Objetos')
     plt.hist(areas, bins=3)
     plt.savefig(filepath)
