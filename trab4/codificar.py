@@ -27,21 +27,13 @@ def writeTextOnImage(image_r, image_g, image_b, text, plano_bits):
     width = image_r.shape[0]
     height = image_r.shape[1]
     text_size = len(text)
-    text = bin(text_size)[2:] + text
     i = 0
+    image = [image_r, image_g, image_b]
     for x in range(width):
         for y in range(height):
             if i == text_size:
                 break
-            image_r[x][y] = replaceBits(image_r[x][y], int(text[i]), plano_bits)
-            i += 1
-            if i == text_size:
-                break
-            image_g[x][y] = replaceBits(image_g[x][y], int(text[i]), plano_bits)
-            i += 1
-            if i == text_size:
-                break
-            image_b[x][y] = replaceBits(image_b[x][y], int(text[i]), plano_bits)
+            image[i % 3][x][y] = replaceBits(image[i % 3][x][y], int(text[i]), plano_bits)
             i += 1
         if i == text_size:
             break
@@ -65,6 +57,7 @@ if __name__ == '__main__':
 
     # Read text and convert to binary
     text = readText(in_text)
+    text += "\0"
     text = text_to_bits(text)
 
     # Write text on image

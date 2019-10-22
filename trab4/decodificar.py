@@ -32,45 +32,27 @@ def decode_binary_string(s):
 def readTextOnImage(image_r, image_g, image_b, plano_bits):
     width = image_r.shape[0]
     height = image_r.shape[1]
-    text_size = ""
     text = ""
     i = 0
     x = 0
     y = 0
-    for x in range(width):
-        for y in range(height):
-            if i == MAX_TEXT_SIZE:
-                break
-            text_size += str(readBit(image_r[x][y], plano_bits))
-            i += 1
-            if i == MAX_TEXT_SIZE:
-                break
-            text_size += str(readBit(image_g[x][y], plano_bits))
-            i += 1
-            if i == MAX_TEXT_SIZE:
-                break
-            text_size += str(readBit(image_b[x][y], plano_bits))
-            i += 1
-        if i == MAX_TEXT_SIZE:
-            break    
-    text_size = decode_binary_string(text_size)
+    zero_count = 0
+    image = [image_r, image_g, image_b]
     for x in range(x, width):
         for y in range(y, height):
-            if i == text_size:
+            if zero_count == 8:
                 break
-            text += str(readBit(image_r[x][y], plano_bits))
+            s = str(readBit(image[i % 3][x][y], plano_bits))
+            # \0 if 8 zeros in a row
+            if s == "0":
+                zero_count += 1
+            else:
+                zero_count = 0
+            text += s
             i += 1
-            if i == text_size:
-                break
-            text += str(readBit(image_g[x][y], plano_bits))
-            i += 1
-            if i == text_size:
-                break
-            text += str(readBit(image_b[x][y], plano_bits))
-            i += 1
-        if i == text_size:
+        if zero_count == 8:
             break
-    return decode_binary_string(text[:30])
+    return decode_binary_string(text)
 
 if __name__ == '__main__':
     in_file = sys.argv[1]
@@ -84,7 +66,6 @@ if __name__ == '__main__':
 
     # Extract text from image
     text = readTextOnImage(image_r, image_g, image_b, plano_bits)
-    print(text)
 
     # Save the text on file
     saveText(out_file, text)
