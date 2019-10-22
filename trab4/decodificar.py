@@ -52,13 +52,17 @@ def readTextOnImage(image_r, image_g, image_b, plano_bits):
             i += 1
         if zero_count == 8:
             break
-    return decode_binary_string(text)
+    # Remove last char (\0)
+    return decode_binary_string(text[:-1])
 
 if __name__ == '__main__':
     in_file = sys.argv[1]
     image_name = in_file[:-4]
     plano_bits = int(sys.argv[2])
     out_file = sys.argv[3]
+    out_path = "./out/"
+    if not os.path.exists(out_path):
+        os.makedirs(out_path)
 
     # Read the coded image
     image = readImage(in_file)
@@ -68,4 +72,4 @@ if __name__ == '__main__':
     text = readTextOnImage(image_r, image_g, image_b, plano_bits)
 
     # Save the text on file
-    saveText(out_file, text)
+    saveText(out_path + out_file, text)

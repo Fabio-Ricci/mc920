@@ -44,10 +44,7 @@ if __name__ == '__main__':
     in_text = sys.argv[2]
     plano_bits = int(sys.argv[3])
     out_file = sys.argv[4]
-    out_file = out_file[:-4]
-    out_path = os.path.dirname(os.path.realpath(__file__)) + "/out/" + out_file + "/"
-    if not os.path.exists("./out/"):
-        os.makedirs("./out/")
+    out_path = "./out/"
     if not os.path.exists(out_path):
         os.makedirs(out_path)
 
@@ -65,4 +62,4 @@ if __name__ == '__main__':
     image = cv2.merge((image_r, image_g, image_b))
 
     # Save image
-    saveImage(out_path + out_file + ".png", image)
+    saveImage(out_path + out_file, image)
