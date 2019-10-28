@@ -21,37 +21,26 @@ def saveText(filepath, text):
     f.write(text)
     f.close()
 
-def readBit(num, plano_bits):
-    return num >> plano_bits & 1
-
 def decode_binary_string(s):
     text = ''.join(chr(int(s[i*8:i*8+8],2)) for i in range(len(s)//8))
+    text = text[:text.find('\0')]
     return ''.join(filter(lambda x: x in set(string.printable), text))
 
 def readTextOnImage(image_b, image_g, image_r, plano_bits):
-    width = image_r.shape[0]
-    height = image_r.shape[1]
     text = ""
-    i = 0
-    zero_count = 0
     image = [image_b, image_g, image_r]
-    for x in range(width):
-        for y in range(height):
-            if zero_count >= 8 and i % 8 == 0:
-                break
-            s = str(readBit(image[i % 3][x][y], plano_bits))
-            # \0 if 8 zeros in a row
-            if s == "0":
-                zero_count += 1
-            else:
-                zero_count = 0
-            text += s
-            i += 1
-        if zero_count >= 8 and i % 8 == 0:
-            break
-    # Remove last char (\0)
-    print(i)
-    return decode_binary_string(text[:-1])
+    # Preserve only the coded bit
+    image = np.bitwise_and(image, 1 << plano_bits)
+    # Shift right to get 0 or 1
+    image = np.right_shift(image, plano_bits)
+    zero_count = 0
+    i = 0
+    for x in range(image[0].shape[0]):
+        for y in range(image[0].shape[1]):
+            text += str(image[0][x][y])
+            text += str(image[1][x][y])
+            text += str(image[2][x][y])
+    return decode_binary_string(text)
 
 if __name__ == '__main__':
     in_file = sys.argv[1]

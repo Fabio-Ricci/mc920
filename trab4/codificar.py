@@ -40,6 +40,7 @@ def writeTextOnImage(image_b, image_g, image_r, text, plano_bits):
     image = [image_b, image_g, image_r]
     for x in range(width):
         for y in range(height):
+            # Write bits at R, G and B
             (image, i) = writeBitsAtPos(image, x, y, text, i, plano_bits, text_size)
         if i >= text_size:
             break
