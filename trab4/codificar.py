@@ -14,13 +14,14 @@ def readText(in_text):
     text_file = open(in_text, "r")
     text = text_file.read()
     text_file.close()
+    # Only ASCII caracters
     return ''.join(filter(lambda x: x in set(string.printable), text))
 
 def text_to_bits(text, encoding='utf-8', errors='surrogatepass'):
     bits = bin(int.from_bytes(text.encode(encoding, errors), 'big'))[2:]
     return bits.zfill(8 * ((len(bits) + 7) // 8))
 
-def replaceBits(num, bit, plano_bits):
+def replaceBit(num, bit, plano_bits):
     mask = 1 << plano_bits
     return (num & ~mask) | ((bit << plano_bits) & mask)
 
@@ -28,23 +29,31 @@ def writeBitsAtPos(image, x, y, text, i, plano_bits, text_size):
     for k in range(3):
         if i >= text_size:
                 break
-        image[k][x][y] = replaceBits(image[k][x][y], int(text[i]), plano_bits)
+        image[k][x][y] = replaceBit(image[k][x][y], int(text[i]), plano_bits)
         i += 1
     return (image, i)
 
-def writeTextOnImage(image_b, image_g, image_r, text, plano_bits):
-    width = image_r.shape[0]
-    height = image_r.shape[1]
+def writeTextOnImage(image, text, plano_bits):
+    width = image.shape[1]
+    height = image.shape[2]
     text_size = len(text)
     i = 0
-    image = [image_b, image_g, image_r]
     for x in range(width):
         for y in range(height):
             # Write bits at R, G and B
             (image, i) = writeBitsAtPos(image, x, y, text, i, plano_bits, text_size)
         if i >= text_size:
             break
-    return (image_b, image_g, image_r)
+    return image
+
+def extractBitPlane(image, out_path):
+    for plano_bits in range(8):
+        img = np.bitwise_and(image, 1 << plano_bits)
+        img = img*255
+        (image_b, image_g, image_r) = cv2.split(img)
+        saveImage(out_path + "_red_" + str(plano_bits) + ".png", image_r)
+        saveImage(out_path + "_green_" + str(plano_bits) + ".png", image_g)
+        saveImage(out_path + "_blue_" + str(plano_bits) + ".png", image_b)
 
 if __name__ == '__main__':
     in_file = sys.argv[1]
@@ -57,7 +66,6 @@ if __name__ == '__main__':
 
     # Read image and split RGB
     image = readImage(in_file)
-    (image_b, image_g, image_r) = cv2.split(image)
 
     # Read text and convert to binary
     text = readText(in_text)
@@ -65,8 +73,10 @@ if __name__ == '__main__':
     text = text_to_bits(text)
 
     # Write text on image
-    (image_b, image_g, image_r) = writeTextOnImage(image_b, image_g, image_r, text, plano_bits)
-    image = cv2.merge((image_b, image_g, image_r))
+    image = writeTextOnImage(image, text, plano_bits)
 
     # Save image
     saveImage(out_path + out_file, image)
+
+    # Extracting bit planes
+    extractBitPlane(image, out_path + out_file[:-4])
