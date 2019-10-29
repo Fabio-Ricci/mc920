@@ -34,8 +34,8 @@ def writeBitsAtPos(image, x, y, text, i, plano_bits, text_size):
     return (image, i)
 
 def writeTextOnImage(image, text, plano_bits):
-    width = image.shape[1]
-    height = image.shape[2]
+    width = image[0].shape[0]
+    height = image[0].shape[1]
     text_size = len(text)
     i = 0
     for x in range(width):
@@ -66,6 +66,8 @@ if __name__ == '__main__':
 
     # Read image and split RGB
     image = readImage(in_file)
+    (image_b, image_g, image_r) = cv2.split(image)
+    image = [image_b, image_g, image_r]
 
     # Read text and convert to binary
     text = readText(in_text)
@@ -74,6 +76,7 @@ if __name__ == '__main__':
 
     # Write text on image
     image = writeTextOnImage(image, text, plano_bits)
+    image = cv2.merge((image[0], image[1], image[2]))
 
     # Save image
     saveImage(out_path + out_file, image)

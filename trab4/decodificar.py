@@ -34,8 +34,8 @@ def readTextOnImage(image, plano_bits):
     image = np.bitwise_and(image, 1 << plano_bits)
     # Shift right to get 0 or 1
     image = np.right_shift(image, plano_bits)
-    for x in range(image.shape[1]):
-        for y in range(image.shape[2]):
+    for x in range(image[0].shape[0]):
+        for y in range(image[1].shape[1]):
             text += str(image[0][x][y])
             text += str(image[1][x][y])
             text += str(image[2][x][y])
@@ -51,6 +51,8 @@ if __name__ == '__main__':
 
     # Read the coded image
     image = readImage(in_file)
+    (image_b, image_g, image_r) = cv2.split(image)
+    image = [image_b, image_g, image_r]
 
     # Extract text from image
     text = readTextOnImage(image, plano_bits)
