@@ -48,7 +48,7 @@ def writeTextOnImage(image, text, plano_bits):
 
 def extractBitPlane(image, out_path):
     for plano_bits in range(8):
-        img = np.bitwise_and(image, 1 << plano_bits)
+        img = np.bitwise_and(image, 1 << plano_bits) 
         img = img*255
         (image_b, image_g, image_r) = cv2.split(img)
         saveImage(out_path + "_red_" + str(plano_bits) + ".png", image_r)
