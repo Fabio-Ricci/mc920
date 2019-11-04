@@ -2,7 +2,6 @@ import cv2
 import sys
 import os
 import numpy as np
-from sklearn.metrics import mean_squared_error
 import math
 
 def readImage(filepath):
@@ -11,25 +10,21 @@ def readImage(filepath):
 def saveImage(filepath, image):
     cv2.imwrite(filepath, image)
 
-def svd(f, k):
-    f = np.moveaxis(f, -1, 0)
-    u, s, vh = np.linalg.svd(f[:, :, 0], full_matrices=False)
-    g = u @ s[..., None, :] @ vh
-    # SVD for all 3 channels
-    u_b, s_b, vh_b = np.linalg.svd(f[:, :, 0], full_matrices=False)
-    u_g, s_g, vh_g = np.linalg.svd(f[:, :, 1], full_matrices=False)
-    u_r, s_r, vh_r = np.linalg.svd(f[:, :, 2], full_matrices=False)
-    u = np.dstack((u_b, u_g, u_r))
-    s = np.dstack((np.diag(s_b), np.diag(s_g), np.diag(s_r)))
-    vh = np.dstack((vh_b, vh_g, vh_r))
-    # Consider only k components
-    u = u[:, :k, :]
-    s = s[:k, :k, :]
-    vh = vh[:k, :, :]
-    g_b = u[:, :, 0] @ s[:, :, 0] @ vh[:, :, 0]
-    g_g = u[:, :, 1] @ s[:, :, 1] @ vh[:, :, 1]
-    g_r = u[:, :, 2] @ s[:, :, 2] @ vh[:, :, 2]
-    return cv2.merge((g_b, g_g, g_r))
+def svd(image, k):
+    # Split to G, B, R
+    f = [image[:, :, 0], image[:, :, 1], image[:, :, 2]]
+    g = f
+    for i in range(3):
+        u, s, vh = np.linalg.svd(f[i], full_matrices=False)
+        # Consider only k components
+        g[i] = u[:, :k] @ np.diag(s[:k]) @ vh[:k, :]
+    return cv2.merge((g[0], g[1], g[2]))
+
+def rmse(image_a, image_b):
+    return math.sqrt(np.sum((image_a - image_b)**2)/(image_a.shape[0]*image_a.shape[1]*image_a.shape[2]))
+
+def compressionRate(image_a, image_b):
+    return sys.getsizeof(image_b)/sys.getsizeof(image_a)
 
 if __name__ == '__main__':
     in_file = sys.argv[1]
@@ -45,7 +40,11 @@ if __name__ == '__main__':
     # Calculate PCA
     img = svd(image, k)
 
+    # Calculate compression rate
+    print("Taxa de compressão (p) =", compressionRate(image, img))
+
     # Calculate RMSE
+    print("RMSE =", rmse(image, img))
 
     # Save image
     saveImage(out_path + out_file, img)
