@@ -24,7 +24,7 @@ def rmse(image_a, image_b):
     return math.sqrt(np.sum((image_a - image_b)**2)/(image_a.shape[0]*image_a.shape[1]*image_a.shape[2]))
 
 def compressionRate(image_a, image_b):
-    return sys.getsizeof(image_b)/sys.getsizeof(image_a)
+    return os.path.getsize(image_b)/os.path.getsize(image_a)
 
 if __name__ == '__main__':
     in_file = sys.argv[1]
@@ -40,11 +40,11 @@ if __name__ == '__main__':
     # Calculate PCA
     img = svd(image, k)
 
+    # Save image
+    saveImage(out_path + out_file, img)
+
     # Calculate compression rate
-    print("Taxa de compressão (p) =", compressionRate(image, img))
+    print("Taxa de compressão (p) =", compressionRate(in_file, out_path + out_file))
 
     # Calculate RMSE
     print("RMSE =", rmse(image, img))
-
-    # Save image
-    saveImage(out_path + out_file, img)
