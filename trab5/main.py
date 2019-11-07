@@ -8,7 +8,7 @@ def readImage(filepath):
     return cv2.imread(filepath, cv2.IMREAD_COLOR)
 
 def saveImage(filepath, image):
-    cv2.imwrite(filepath, image)
+    cv2.imwrite(filepath, image, [cv2.IMWRITE_PNG_COMPRESSION, 9])
 
 def svd(image, k):
     # Split to G, B, R
